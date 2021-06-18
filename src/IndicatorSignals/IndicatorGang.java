@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.TimeZone;
 
 public class IndicatorGang implements Runnable{
@@ -29,20 +30,38 @@ public class IndicatorGang implements Runnable{
         SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
                 options);
         Candlestick c;
-
+        List<Candlestick> cl;
 
         double crsi,cema,stoarr[];
         int emagoldencross;
 
-        for(int i=0;i<100;i++) {
-            c = syncRequestClient.getCandlestick(this.pair, CandlestickInterval.ONE_MINUTE, (Long) null, (Long) null, 1).get(0);
+        cl = syncRequestClient.getCandlestick(this.pair, CandlestickInterval.ONE_MINUTE, (Long) null, (Long) null, 50);
+        for(int i=0;i<50;i++) {
+            c = cl.get(i);
             LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(c.getOpenTime()), TimeZone.getDefault().toZoneId());
 
             LocalDateTime ldt = LocalDateTime.parse(triggerTime.toString());
             ZoneId zoneId = ZoneId.of("Asia/Kolkata"); // Or "America/Montreal" etc.
             ZonedDateTime zdt = ldt.atZone(zoneId); // Or atOffset( myZoneOffset ) if only an offset is known rather than a full time zone.
 
-            this.series.addBar(ZonedDateTime.now(), c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume());
+            this.series.addBar(zdt, c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume());
+        }
+
+        for(int i=0;i<100;i++) {
+            try{
+                Thread.sleep(1000*this.secinterval);}
+            catch (Exception e){
+                System.out.println(e);
+            }
+            c = syncRequestClient.getCandlestick(this.pair, CandlestickInterval.ONE_MINUTE, (Long) null, (Long) null, 1).get(0);
+
+            LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(c.getOpenTime()), TimeZone.getDefault().toZoneId());
+            LocalDateTime ldt = LocalDateTime.parse(triggerTime.toString());
+            ZoneId zoneId = ZoneId.of("Asia/Kolkata"); // Or "America/Montreal" etc.
+            ZonedDateTime zdt = ldt.atZone(zoneId); // Or atOffset( myZoneOffset ) if only an offset is known rather than a full time zone.
+
+
+            this.series.addBar(zdt, c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume());
 
             crsi = new RSISignal(this.series,6).rsiFun();
             System.out.println("\nRSI: "+crsi);
@@ -56,11 +75,7 @@ public class IndicatorGang implements Runnable{
             stoarr = new StoOsc(this.series,14).stochastic();
             System.out.println("Stro Osc  K:"+stoarr[0]+" D:"+stoarr[1]+" Cross"+stoarr[2]);
 
-            try{
-                Thread.sleep(1000*this.secinterval);}
-            catch (Exception e){
-                System.out.println(e);
-            }
+
 
         }
 
