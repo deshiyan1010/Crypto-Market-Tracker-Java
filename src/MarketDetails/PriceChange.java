@@ -15,7 +15,7 @@ public class PriceChange {
         double oldPrice,cprice;
         ctime = syncRequestClient.getCandlestick("BTCUSDT", CandlestickInterval.ONE_MINUTE, (Long)null, (Long)null, 1).get(0).getOpenTime();
         ctime -= secago*1000;
-        System.out.println(ctime);
+
         cprice = syncRequestClient.getSymbolPriceTicker("BTCUSDT").get(0).getPrice().doubleValue();
         oldPrice = syncRequestClient.getCandlestick("BTCUSDT", CandlestickInterval.ONE_MINUTE, (Long)ctime, (Long)null, 1).get(0).getOpen().doubleValue();
         double[] arr = {cprice,oldPrice,cprice-oldPrice};

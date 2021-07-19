@@ -1,19 +1,22 @@
 package Buffer;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
 
-public class IndicatorBuffer{
+public class HistoryBuffer {
     int maxLength;
-    public IndicatorBuffer(int maxLength){
+
+    public HistoryBuffer(int maxLength) {
 
         this.maxLength = maxLength;
     }
-    LinkedList<HashMap<String,Object>> ll = new LinkedList<HashMap<String,Object>>();
+
+    LinkedList<HashMap<String, Object>> ll = new LinkedList<HashMap<String, Object>>();
 
     private int len = 0;
 
-    public void add(HashMap a){
+    public void add(HashMap a) {
 //        if(len>maxLength){
 //            try{
 //                wait();
@@ -24,14 +27,14 @@ public class IndicatorBuffer{
 //        }
 //        System.out.println("Added: "+a);
         ll.addLast(a);
-        this.len+=1;
-        if (this.len>this.maxLength){
+        this.len += 1;
+        if (this.len > this.maxLength) {
             this.remove();
         }
 //        notifyAll();
     }
 
-    public Object remove(){
+    public Object remove() {
 //        if(len==0){
 //            try{
 //                wait();
@@ -41,20 +44,20 @@ public class IndicatorBuffer{
 //            }
 //        }
 //        System.out.println("\t\tRemoved: "+ll.removeFirst());
-        this.len-=1;
+        this.len -= 1;
 //        notifyAll();
         return ll.removeFirst();
     }
 
-    public LinkedList<HashMap<String,Object>> fetchData(){
+    public LinkedList<HashMap<String, Object>> fetchData() {
         return ll;
     }
 }
 //class Producer extends Thread {
 //
-//    IndicatorBuffer b;
+//    HistoryBuffer b;
 //
-//    Producer(IndicatorBuffer b)
+//    Producer(HistoryBuffer b)
 //    {
 //        this.b = b;
 //    }
@@ -80,9 +83,9 @@ public class IndicatorBuffer{
 //
 //class Consumer extends Thread {
 //
-//    IndicatorBuffer b;
+//    HistoryBuffer b;
 //
-//    Consumer(IndicatorBuffer b)
+//    Consumer(HistoryBuffer b)
 //    {
 //        this.b = b;
 //    }
@@ -108,7 +111,7 @@ public class IndicatorBuffer{
 //public class Main {
 //    public static void main(String args[])
 //    {
-//        IndicatorBuffer b = new IndicatorBuffer(10);
+//        HistoryBuffer b = new HistoryBuffer(10);
 //
 //        Producer p = new Producer(b);
 //        Consumer c = new Consumer(b);
